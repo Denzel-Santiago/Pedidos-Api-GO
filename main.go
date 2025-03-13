@@ -17,7 +17,7 @@ func main() {
 	r := gin.Default()
 	routes.SetupPedidosRoutes(r, deps.PedidosHandler)
 
-	if err := r.Run(":8080"); err != nil {
+	if err := r.Run(":8000"); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
 	}
 }

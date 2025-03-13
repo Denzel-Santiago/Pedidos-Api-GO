@@ -3,19 +3,39 @@ package core
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"os"
+
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 )
 
-// DB es una estructura que encapsula la conexión a la base de datos.
-type DB struct {
-	*sql.DB
+var db *sql.DB
+
+func InitDB() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("Advertencia: No se pudo cargar .env")
+	}
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true",
+		os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"),
+		os.Getenv("DB_NAME"),
+	)
+
+	var err error
+	db, err = sql.Open("mysql", dsn)
+	if err != nil {
+		log.Fatal("Error al conectar a la BD:", err)
+	}
+
+	if err = db.Ping(); err != nil {
+		log.Fatal("No se pudo conectar a la BD:", err)
+	}
+
+	fmt.Println("Conexión a la BD exitosa")
 }
 
-// NewDB crea una nueva conexión a la base de datos MySQL.
-func NewDB() (*DB, error) {
-	db, err := sql.Open("mysql", "root:Desz117s@tcp(127.0.0.1:3306)/eventosdb")
-	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %v", err)
-	}
-	return &DB{db}, nil
+func GetDB() *sql.DB {
+	return db
 }

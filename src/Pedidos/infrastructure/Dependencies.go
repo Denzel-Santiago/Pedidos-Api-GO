@@ -1,35 +1,35 @@
 package infrastructure
 
 import (
-	"Pedidos-Api/src/core"
-	"Pedidos-Api/src/pedidos/application"
-	"Pedidos-Api/src/pedidos/domain"
+	"Pedidos-Api/src/Pedidos/application"
+	"Pedidos-Api/src/Pedidos/infrastructure"
 )
 
-type Dependencies struct {
-	DB                  *core.DB
-	PedidoRepository    domain.PedidoRepository
-	CreatePedidoUseCase *application.CreatePedidosUseCase
-	GetPedidoUseCase    *application.GetPedidosUseCase
-	PedidosHandler      *application.PedidosHandler
-}
+func InitPedidoDependencies() (
+	*CreatePedidoController,
+	*ViewPedidoController,
+	*UpdatePedidoController,
+	*DeletePedidoController,
+	*ViewAllPedidosController,
+	*GetPedidoController,
+) {
 
-func SetupDependencies() (*Dependencies, error) {
-	db, err := core.NewDB()
-	if err != nil {
-		return nil, err
-	}
+	repo := NewMysqlPedidoRepository()
 
-	pedidoRepo := domain.NewPedidoRepository(db.DB)
-	createPedidoUseCase := application.NewCreatePedidosUseCase(pedidoRepo)
-	getPedidoUseCase := application.NewGetPedidosUseCase(pedidoRepo)
-	pedidosHandler := application.NewPedidosHandler(createPedidoUseCase, getPedidoUseCase)
+	createUseCase := application.NewCreatePedidoUseCase(repo)
+	viewUseCase := application.NewViewPedidoUseCase(repo)
+	updateUseCase := application.NewUpdatePedidoUseCase(repo)
+	deleteUseCase := application.NewDeletePedidoUseCase(repo)
+	viewAllUseCase := application.NewViewAllPedidosUseCase(repo)
+	getPedidoUseCase := application.NewGetPedidoUseCase(repo)
 
-	return &Dependencies{
-		DB:                  db,
-		PedidoRepository:    pedidoRepo,
-		CreatePedidoUseCase: createPedidoUseCase,
-		GetPedidoUseCase:    getPedidoUseCase,
-		PedidosHandler:      pedidosHandler,
-	}, nil
+	// Crear controladores
+	createController := NewCreatePedidoController(createUseCase)
+	viewController := NewViewPedidoController(viewUseCase)
+	updateController := NewUpdatePedidoController(updateUseCase)
+	deleteController := NewDeletePedidoController(deleteUseCase)
+	viewAllController := NewViewAllPedidosController(viewAllUseCase)
+	getPedidoController := NewGetPedidoController(getPedidoUseCase)
+
+	return createController, viewController, updateController, deleteController, viewAllController, getPedidoController
 }

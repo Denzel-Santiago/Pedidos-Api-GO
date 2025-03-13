@@ -1,31 +1,46 @@
 package infrastructure
 
 import (
-	"Pedidos-Api/src/pedidos/application"
-	"Pedidos-Api/src/pedidos/domain/entities"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"Pedidos-Api/src/Pedidos/application"
+	"Pedidos-Api/src/Pedidos/domain/entities"
+	"github.com/gin-gonic/gin"
 )
 
-type PedidosController struct {
-	createPedidoUseCase *application.CreatePedidosUseCase
+type CreatePedidoController struct {
+	createPedidoUseCase *application.CreatePedidoUseCase
 }
 
-func NewPedidosController(createPedidoUseCase *application.CreatePedidosUseCase) *PedidosController {
-	return &PedidosController{createPedidoUseCase: createPedidoUseCase}
+func NewCreatePedidoController(createPedidoUseCase *application.CreatePedidoUseCase) *CreatePedidoController {
+	return &CreatePedidoController{
+		createPedidoUseCase: createPedidoUseCase,
+	}
 }
 
-func (c *PedidosController) CreatePedido(ctx *gin.Context) {
+func (ctrl *CreatePedidoController) Run(c *gin.Context) {
 	var pedido entities.Pedido
-	if err := ctx.ShouldBindJSON(&pedido); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+
+	if errJSON := c.ShouldBindJSON(&pedido); errJSON != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Datos del pedido inválidos",
+			"error":   errJSON.Error(),
+		})
 		return
 	}
 
-	if err := c.createPedidoUseCase.Execute(pedido); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	pedidoCreado, errAdd := ctrl.createPedidoUseCase.Run(&pedido)
+
+	if errAdd != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Error al agregar el pedido",
+			"error":   errAdd.Error(),
+		})
 		return
 	}
 
-	ctx.JSON(http.StatusCreated, gin.H{"message": "Pedido created successfully"})
+	c.JSON(http.StatusOK, gin.H{
+		"message": "El pedido ha sido agregado",
+		"pedido":  pedidoCreado,
+	})
 }

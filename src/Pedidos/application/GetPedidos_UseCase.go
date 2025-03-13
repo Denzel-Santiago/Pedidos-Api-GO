@@ -1,18 +1,20 @@
 package application
 
 import (
-	"Pedidos-Api/src/pedidos/domain"
-	"Pedidos-Api/src/pedidos/domain/entities"
+	"Pedidos-Api/src/Pedidos/domain"
+	"Pedidos-Api/src/Pedidos/domain/entities"
 )
 
-type GetPedidosUseCase struct {
-	repo domain.PedidoRepository
+type GetPedidoUseCase struct {
+	db domain.IPedido
 }
 
-func NewGetPedidosUseCase(repo domain.PedidoRepository) *GetPedidosUseCase {
-	return &GetPedidosUseCase{repo: repo}
+func NewGetPedidoUseCase(db domain.IPedido) *GetPedidoUseCase {
+	return &GetPedidoUseCase{
+		db: db,
+	}
 }
 
-func (uc *GetPedidosUseCase) Execute(pedidoID int) (*entities.Pedido, error) {
-	return uc.repo.FindByID(pedidoID)
+func (uc *GetPedidoUseCase) Run(id int) (entities.Pedido, error) {
+	return uc.db.FindByID(id)
 }
