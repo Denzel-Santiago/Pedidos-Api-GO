@@ -2,7 +2,6 @@ package infrastructure
 
 import (
 	"Pedidos-Api/src/Pedidos/application"
-	"Pedidos-Api/src/Pedidos/infrastructure"
 )
 
 func InitPedidoDependencies() (

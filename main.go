@@ -1,23 +1,32 @@
 package main
 
 import (
-	"Pedidos-Api/src/pedidos/infrastructure"
-	"Pedidos-Api/src/pedidos/infrastructure/routes"
-	"log"
+	"fmt"
 
+	pedidosRut "Pedidos-Api/src/Pedidos/infrastructure/routes" // Importamos las rutas de pedidos
+	"Pedidos-Api/src/core"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	deps, err := infrastructure.SetupDependencies()
-	if err != nil {
-		log.Fatalf("Failed to setup dependencies: %v", err)
-	}
+	// Inicializar la base de datos
+	core.InitDB()
 
+	// Crear un enrutador de Gin
 	r := gin.Default()
-	routes.SetupPedidosRoutes(r, deps.PedidosHandler)
 
-	if err := r.Run(":8000"); err != nil {
-		log.Fatalf("Failed to run server: %v", err)
+	// ✅ Registrar Middleware CORS
+	r.Use(core.CORSMiddleware())
+
+	// ✅ Configurar las rutas de pedidos
+	pedidosRouter := pedidosRut.NewRouter(r)
+	pedidosRouter.Run()
+
+	fmt.Println("¡API en Funcionamiento :D!")
+
+	// ✅ Iniciar el servidor
+	err := r.Run(":8000")
+	if err != nil {
+		fmt.Println("Error al iniciar el servidor:", err)
 	}
 }
