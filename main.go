@@ -25,7 +25,7 @@ func main() {
 	fmt.Println("¡API en Funcionamiento :D!")
 
 	// ✅ Iniciar el servidor
-	err := r.Run(":8000")
+	err := r.Run(":8001")
 	if err != nil {
 		fmt.Println("Error al iniciar el servidor:", err)
 	}
