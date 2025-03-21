@@ -1,3 +1,4 @@
+//pedidos-api-go/src/Pedidos/infrastructure/Dependencies.go
 package infrastructure
 
 import (

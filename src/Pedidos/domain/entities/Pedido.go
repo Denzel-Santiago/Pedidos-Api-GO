@@ -1,3 +1,4 @@
+//pedidos-api-go/src/Pedidos/domain/entities/Pedido.go
 package entities
 
 import (
