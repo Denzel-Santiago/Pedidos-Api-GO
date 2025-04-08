@@ -1,4 +1,4 @@
-//pedidos-api-go/src/Pedidos/infrastructure/routes/Pedido_routes.go
+// pedidos-api-go/src/Pedidos/infrastructure/routes/Pedido_routes.go
 package routes
 
 import (
@@ -22,7 +22,7 @@ func NewRouter(engine *gin.Engine) *Router {
 	}
 }
 
-// ✅ Función para recibir pedidos y actualizar boletos
+// Función para recibir pedidos y actualizar boletos
 func logPedidoHandler(c *gin.Context) {
 	var pedido map[string]interface{}
 
@@ -31,36 +31,34 @@ func logPedidoHandler(c *gin.Context) {
 		return
 	}
 
-	// 🖨️ Imprimir JSON recibido
+	// Imprimir JSON recibido
 	prettyJSON, _ := json.MarshalIndent(pedido, "", "  ")
 	fmt.Println("📩 Pedido recibido desde consumer.go:")
 	fmt.Println(string(prettyJSON))
 	fmt.Println("----------------------------")
 
-	// 📌 Extraer ID del evento desde el JSON recibido
-	eventID, ok := pedido["id"].(float64) // JSON decodifica los números como float64
+	// ID del evento desde el JSON recibido
+	eventID, ok := pedido["id"].(float64)
 	if !ok {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ID de evento inválido"})
 		return
 	}
 
-	// 📌 Llamar a la función para actualizar boletos
+	// función para actualizar boletos
 	err := actualizarBoletos(int(eventID))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	// ✅ Confirmar actualización exitosa
+	// actualización exitosa
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Pedido recibido y boletos actualizados correctamente",
 		"data":    pedido,
 	})
 }
 
-
-
-// ✅ Función para obtener el ID del evento basado en la ubicación
+// obtener el ID del evento basado en la ubicación
 func obtenerEventoPorUbicacion(location string) (int, error) {
 	url := fmt.Sprintf("http://localhost:8000/events/location/%s", location)
 
@@ -87,13 +85,13 @@ func obtenerEventoPorUbicacion(location string) (int, error) {
 	return event.ID, nil
 }
 
-// ✅ Función para hacer una petición PUT a la API 1 y reducir los boletos
+// petición PUT a la API 1 y reducir los boletos
 func actualizarBoletos(eventID int) error {
 	url := fmt.Sprintf("http://localhost:8000/events/%d", eventID)
 
-	// 📝 Cuerpo de la petición para reducir 1 boleto
+	// petición para reducir 1 boleto
 	payload := map[string]interface{}{
-		"available_tickets": -1, // Reducimos en 1 la cantidad disponible
+		"available_tickets": -1,
 	}
 	payloadBytes, _ := json.Marshal(payload)
 
