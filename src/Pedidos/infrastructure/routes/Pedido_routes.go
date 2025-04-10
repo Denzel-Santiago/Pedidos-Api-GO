@@ -51,32 +51,6 @@ func logPedidoHandler(c *gin.Context) {
 	})
 }
 
-func obtenerEventoPorUbicacion(location string) (int, error) {
-	url := fmt.Sprintf("http://localhost:8000/events/location/%s", location)
-
-	resp, err := http.Get(url)
-	if err != nil {
-		return 0, fmt.Errorf("error en la petición: %v", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode == http.StatusNotFound {
-		return 0, fmt.Errorf("evento no encontrado")
-	} else if resp.StatusCode != http.StatusOK {
-		return 0, fmt.Errorf("error en API 1, código: %d", resp.StatusCode)
-	}
-
-	var event struct {
-		ID int `json:"id"`
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(&event); err != nil {
-		return 0, fmt.Errorf("error al decodificar respuesta")
-	}
-
-	return event.ID, nil
-}
-
 func actualizarBoletos(pedido map[string]interface{}) error {
 	// Extraer el ID del evento
 	eventID, ok := pedido["id"].(float64)
@@ -98,7 +72,7 @@ func actualizarBoletos(pedido map[string]interface{}) error {
 		payload["location"] = location
 	}
 
-	url := fmt.Sprintf("http://localhost:8000/events/%d", int(eventID))
+	url := fmt.Sprintf("http://34.201.232.188:8000/events/%d", int(eventID))
 
 	// Convertir el mapa a JSON
 	payloadBytes, err := json.Marshal(payload)
