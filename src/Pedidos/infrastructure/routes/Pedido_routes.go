@@ -1,5 +1,4 @@
 // pedidos-api-go/src/Pedidos/infrastructure/routes/Pedido_routes.go
-// pedidos-api-go/src/Pedidos/infrastructure/routes/Pedido_routes.go
 package routes
 
 import (
